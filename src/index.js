@@ -12,14 +12,25 @@ dotenv.config();
 connectDb();
 
 // ✅ FIXED CORS - NO WILDCARD, SPECIFIC ORIGINS
+// Define your allowed domains
 const allowedOrigins = [
+  'http://localhost:5174',
   'https://full-stack01-frontend.vercel.app'
 ];
 
 app.use(cors({
-    origin: 'http://localhost:5174', // Aapke frontend ka URL
-    credentials: true,               // Cookies/Headers allow karne ke liye
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Included OPTIONS for preflight
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
