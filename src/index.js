@@ -17,6 +17,7 @@ connectDb();
 const allowedOrigins = [
   'http://localhost:5174',
   'https://full-stack01-frontend.vercel.app'
+ 
 ];
 
 // app.use(cors({
@@ -36,7 +37,7 @@ const allowedOrigins = [
 // }));
 app.use(cors({
   origin:allowedOrigins,
-  creadentials:true
+  credentials:true
 }))
 
 app.use(express.json());
