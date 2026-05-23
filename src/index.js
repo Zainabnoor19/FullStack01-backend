@@ -34,7 +34,7 @@ const allowedOrigins = [
 //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 //   allowedHeaders: ['Content-Type', 'Authorization']
 // }));
-app.use(app.cors({
+app.use(cors({
   origin:allowedOrigins,
   creadentials:true
 }))
@@ -49,6 +49,10 @@ app.get("/", (req, res) => {
 app.use('/api/v1/auth', authroute);
 
 const PORT = process.env.PORT || 7000;
+if(process.env.DEP == 'local'){
 app.listen(PORT, () => {
   console.log("Server is running on port", PORT);
 });
+}
+
+export default app
