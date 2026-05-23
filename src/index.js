@@ -13,26 +13,31 @@ connectDb();
 
 // ✅ FIXED CORS - NO WILDCARD, SPECIFIC ORIGINS
 // Define your allowed domains
+// Replace your current app.use(cors(...)) with this cleaner alternative:
 const allowedOrigins = [
   'http://localhost:5174',
   'https://full-stack01-frontend.vercel.app'
 ];
 
 app.use(cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Included OPTIONS for preflight
-    allowedHeaders: ['Content-Type', 'Authorization']
+  origin: function (origin, callback) {
+    // If no origin (like mobile apps/curl/same-origin), allow it
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// IMPORTANT: Manually intercept and instantly resolve preflight OPTIONS requests 
+// before they attempt to hit your routes.
+app.options('*', cors());
 
 app.use(express.json());
 app.use(cookieParser());
