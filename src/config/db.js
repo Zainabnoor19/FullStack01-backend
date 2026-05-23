@@ -1,19 +1,16 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
-
-const connectDb = async()=>{
+const connectDb = async () => {
     try {
-        console.log('check Strig',process.env.MONGOURI);
-        
-        //  await mongoose.connect(process.env.MONGOURI);
-        //  console.log('mongo db connected');
-         mongoose.connect(process.env.MONGOURI)
-  .then(() => app.listen(PORT, () => console.log('Server running')))
-  .catch(err => console.error('DB Connection Error:', err));
+        if (!process.env.MONGOURI) {
+            throw new Error("MONGOURI environment variable is missing!");
+        }
+        await mongoose.connect(process.env.MONGOURI);
+        console.log('MongoDB connected successfully');
     } catch (error) {
-        console.log('error in db-->',error);
-        
+        console.error('Error in DB connection -->', error);
+        process.exit(1); // Exit process if DB connection fails
     }
 }
 
-export default connectDb
+export default connectDb;
