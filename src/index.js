@@ -1,36 +1,45 @@
-import dns from 'dns'
-dns.setServers(['8.8.8.8','1.1.1.1'])
-
 import express from "express";
 import connectDb from "./config/db.js";
 import dotenv from "dotenv";
 import authroute from "./routes/AuthRoutes.js";
-import cookieParser from 'cookie-parser'
-import cors from 'cors'
-// import blogroute from "./routes/BlogRoute.js";  // YEH HATANA HAI
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 const app = express();
-
 dotenv.config();
 connectDb();
 
+// ✅ FIXED CORS - NO WILDCARD, SPECIFIC ORIGINS
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://full-stack01-frontend.vercel.app'
+];
+
 app.use(cors({
-  origin: "*",
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,  // ✅ Important for cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
-app.use(cookieParser())
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  res.json({
-    message: "successfully run",
-  });
+  res.json({ message: "successfully run" });
 });
 
-// Sirf auth routes rakho
-app.use('/api/v1/auth', authroute)
-// app.use('/api/v1/blog/', blogroute)  // YEH BHI HATANA HAI
+app.use('/api/v1/auth', authroute);
 
-app.listen(process.env.PORT, () => {
-  console.log("server is running", process.env.PORT);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log("server is running on port", PORT);
 });
