@@ -13,7 +13,6 @@ connectDb();
 
 // ✅ FIXED CORS - NO WILDCARD, SPECIFIC ORIGINS
 const allowedOrigins = [
-  'http://localhost:5174',
   'https://full-stack01-frontend.vercel.app'
 ];
 
@@ -33,7 +32,7 @@ app.get("/", (req, res) => {
 
 app.use('/api/v1/auth', authroute);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 7000;
 app.listen(PORT, () => {
   console.log("server is running on port", PORT);
 });
