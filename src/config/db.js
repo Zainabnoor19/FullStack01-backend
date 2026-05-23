@@ -7,8 +7,8 @@ const connectDb = async()=>{
         
         //  await mongoose.connect(process.env.MONGOURI);
         //  console.log('mongo db connected');
-        await mongoose.connect(process.env.MONGODB_URI)
-  .then(() => app.listen(port, () => console.log('Server running')))
+         mongoose.connect(process.env.MONGOURI)
+  .then(() => app.listen(PORT, () => console.log('Server running')))
   .catch(err => console.error('DB Connection Error:', err));
     } catch (error) {
         console.log('error in db-->',error);
