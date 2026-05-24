@@ -27,9 +27,10 @@ const addUser = async (req, res) => {
         console.log('error',err);
         console.log('newtoken--->',token);
         res.cookie("token", token, {
-          httpOnly: true,
-          secure: true,
-        });
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      });
         console.log("isline tak aya");
 
       return  res.json({
@@ -204,9 +205,10 @@ const loginUser = async (req, res) => {
       process.env.JWT_SECRET,
       function (err, token) {
         res.cookie("token", token, {
-          httpOnly: true,
-          secure: true,
-        });
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      });
         console.log("isline tak aya");
 
        return res.json({
