@@ -29,7 +29,7 @@ const addUser = async (req, res) => {
         res.cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
       });
         console.log("isline tak aya");
 
@@ -207,7 +207,7 @@ const loginUser = async (req, res) => {
         res.cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
       });
         console.log("isline tak aya");
 
@@ -249,7 +249,7 @@ const logout = (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
     });
     console.log("yeh line bhi chali hai");
 
