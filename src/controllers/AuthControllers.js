@@ -246,7 +246,11 @@ const loginUser = async (req, res) => {
 
 const logout = (req, res) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
     console.log("yeh line bhi chali hai");
 
     res.json({
