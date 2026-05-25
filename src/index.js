@@ -16,7 +16,7 @@ connectDb();
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://full-stack01-frontend.vercel.app'
+  'https://full-stack01-frontend.vercel.app/'
  
 ];
 
