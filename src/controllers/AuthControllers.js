@@ -23,12 +23,13 @@ const addUser = async (req, res) => {
       { expiresIn: '7d' }
     );
     
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,  // ✅ Vercel requires secure
+  sameSite: "none",  // ✅ Critical for cross-domain
+  path: '/',
+  maxAge: 7 * 24 * 60 * 60 * 1000
+});
     
     const userWithoutPassword = data.toObject();
     delete userWithoutPassword.password;
@@ -199,12 +200,13 @@ const loginUser = async (req, res) => {
       );
       
       // Set cookie
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Only secure in production
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-      });
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,  // ✅ Vercel par true hi rakhna
+  sameSite: "none",  // ✅ 'lax' se 'none' karo - IMPORTANT!
+  path: '/',
+  maxAge: 7 * 24 * 60 * 60 * 1000
+});
       
       // Return user WITHOUT password
       const userWithoutPassword = user.toObject();
@@ -233,15 +235,13 @@ const loginUser = async (req, res) => {
 
 const logout = (req, res) => {
   try {
-    // ✅ Clear cookie properly
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: "lax",
-      path: '/'  // ✅ Important: clear from all paths
+      secure: true,  // ✅ Match same options
+      sameSite: "none",
+      path: '/'
     });
     
-    // ✅ Also send response that logout was successful
     return res.status(200).json({
       status: true,
       message: "user logout successfully",
