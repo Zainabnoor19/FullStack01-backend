@@ -1,5 +1,5 @@
-import dns from 'dns';
-dns.setServers(['8.8.8.8','1.1.1.1']);
+// import dns from 'dns';
+// dns.setServers(['8.8.8.8','1.1.1.1']);
 // import express from "express";
 // import connectDb from "./config/db.js";
 // import dotenv from "dotenv";
