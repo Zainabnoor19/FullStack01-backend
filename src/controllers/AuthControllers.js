@@ -233,19 +233,21 @@ const loginUser = async (req, res) => {
 
 const logout = (req, res) => {
   try {
+    // ✅ Clear cookie properly
     res.clearCookie("token", {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: "lax",
+      path: '/'  // ✅ Important: clear from all paths
     });
-    console.log("yeh line bhi chali hai");
-
-    res.json({
+    
+    // ✅ Also send response that logout was successful
+    return res.status(200).json({
       status: true,
       message: "user logout successfully",
     });
   } catch (error) {
-    res.json({
+    return res.status(500).json({
       status: false,
       message: error.message,
     });
