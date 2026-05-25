@@ -5,51 +5,43 @@ import bcrypt from "bcrypt";
 const addUser = async (req, res) => {
   const { name, email, password } = req.body;
   try {
-    if (!email && !password && !name) {
+    if (!email || !password || !name) {
       return res.json({
         status: false,
-        message: "required feilds",
+        message: "required fields",
       });
     }
     
-    const hashPass = await bcrypt.hash(req.body.password, 10);
-    console.log(hashPass);
-    const data1 = { name, email, password: hashPass,role:req.body.role };
+    const hashPass = await bcrypt.hash(password, 10);
+    const data1 = { name, email, password: hashPass, role: req.body.role || 'user' };
     const user = new Users(data1);
     const data = await user.save();
-    if(data){
-      console.log('yeh line chali');
-      
-      const token = jwt.sign(
-      { id: data._id, email: data.email,role:data.role},
+    
+    const token = jwt.sign(
+      { id: data._id, email: data.email, role: data.role },
       process.env.JWT_SECRET,
-      function (err, token) {
-        console.log('error',err);
-        console.log('newtoken--->',token);
-        res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-      });
-        console.log("isline tak aya");
-
-      return  res.json({
+      { expiresIn: '7d' }
+    );
+    
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+    
+    const userWithoutPassword = data.toObject();
+    delete userWithoutPassword.password;
+    
+    return res.json({
       status: true,
       message: "user created successfully",
-      user: data,
-      token:token
+      user: userWithoutPassword,
+      token: token
     });
-      },
-    );
-     
-    }
-   
-
-   
   } catch (error) {
     console.log("error in creating user-->", error);
-
-    res.json({
+    return res.json({
       status: false,
       message: error.message,
     });
@@ -198,46 +190,41 @@ const loginUser = async (req, res) => {
       });
     }
     
-    const decoded =await bcrypt.compare(password,user.password)
-     if(decoded){
-   const token = jwt.sign(
-      { id: user._id, email: user.email,role:user.role},
-      process.env.JWT_SECRET,
-      function (err, token) {
-        res.cookie("token", token, {
+    const decoded = await bcrypt.compare(password, user.password);
+    if (decoded) {
+      const token = jwt.sign(
+        { id: user._id, email: user.email, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' } // Add expiry
+      );
+      
+      // Set cookie
+      res.cookie("token", token, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production', // Only secure in production
         sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
       });
-        console.log("isline tak aya");
-
-       return res.json({
-          status: true,
-          message: "user login successfully",
-          user: user,
-          token: token,
-        });
-      },
-    );
-     }else{
-      res.status(404).json({
-          status: false,
-          message: 'invalid credentials',
-       
-        });
-     }
-     
-     
-  
-    console.log("JWT SECRET-->", process.env.JWT_SECRET);
-    console.log("isline takkk aya");
-  
-
-    // console.log("logindata---->", user);
+      
+      // Return user WITHOUT password
+      const userWithoutPassword = user.toObject();
+      delete userWithoutPassword.password;
+      
+      return res.json({
+        status: true,
+        message: "user login successfully",
+        user: userWithoutPassword,
+        token: token, // Also send token in response body
+      });
+    } else {
+      return res.status(401).json({
+        status: false,
+        message: 'invalid credentials',
+      });
+    }
   } catch (error) {
     console.log("error in login user-->", error.message);
-
-    res.json({
+    return res.json({
       status: false,
       message: error.message,
     });
