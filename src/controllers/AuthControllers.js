@@ -6,7 +6,7 @@ const addUser = async (req, res) => {
   const { name, email, password } = req.body;
   try {
     if (!email || !password || !name) {
-      return res.json({
+      return res.status(400).json({  // ✅ Add status
         status: false,
         message: "required fields",
       });
@@ -33,15 +33,15 @@ const addUser = async (req, res) => {
     const userWithoutPassword = data.toObject();
     delete userWithoutPassword.password;
     
-    return res.json({
+    return res.status(201).json({  // ✅ Change 201 status
       status: true,
       message: "user created successfully",
       user: userWithoutPassword,
-      token: token
+      token: token  // ✅ Token already there
     });
   } catch (error) {
     console.log("error in creating user-->", error);
-    return res.json({
+    return res.status(500).json({  // ✅ Add status
       status: false,
       message: error.message,
     });
